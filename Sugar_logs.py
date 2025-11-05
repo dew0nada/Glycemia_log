@@ -337,7 +337,8 @@ tk.Button(today_log_page, text="← Back to Home", command=lambda: show_page(hom
 
 # --- ABOUT PAGE ---
 tk.Label(about_page, text="ℹ️ About This App", font=("Arial", 15)).pack(pady=15)
-tk.Label(about_page, text="Made with 💕 using Python & Tkinter.\n\nStores daily logs into JSON.\nIncludes weekly summary view!", wraplength=300).pack(pady=10)
+tk.Label(about_page, text="Bits and bytes with a wink and a cheer, \n \t\tKeeps your daily logs crystal clear!" , wraplength=300).pack(pady=10)
+tk.Label(about_page, text="by: SABRI Nada (Dew) \nMade with 💕 Python & Tkinter.\n\nStores daily logs into JSON.\nIncludes weekly summary view!", wraplength=300).pack(pady=10)
 tk.Button(about_page, text="← Back to Home", command=lambda: show_page(home_page)).pack(pady=15)
 
 # =============================== START APP ===============================
