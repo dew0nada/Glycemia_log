@@ -29,22 +29,22 @@ FIELD_RULES = {
 }
 
 
-# Flatten all fields for Today page
+# Flatten all fields for Today page (no category)
 ALL_FIELDS = []
 for cat_fields in FIELDS.values():
     ALL_FIELDS.extend(cat_fields)
 
 # =============================== FILE HANDLING ===============================
 def save_partial_entry(category_fields):
-    """Save only the fields the user filled for today, validate ranges."""
+    #Save only the fields the user filled for today, validate ranges
     today = str(date.today())
     data = load_data()
-    entry = data.get(today, {})  # existing data or empty
+    entry = data.get(today, {})  #existing data or empty
 
     for field in category_fields:
         value_str = entries[field].get().strip()
         if not value_str:
-            continue  # skip empty fields
+            continue  #skip empty fields
 
         if not value_str.isdigit():
             messagebox.showerror("Invalid Input",
@@ -59,7 +59,7 @@ def save_partial_entry(category_fields):
                                      f"{field} = {value}\nAllowed: {min_val} → {max_val}\n{msg}")
                 return
 
-        # Save only the filled value
+        #save only the filled value
         entry[field] = value
 
     data[today] = entry
@@ -67,7 +67,7 @@ def save_partial_entry(category_fields):
     messagebox.showinfo("Saved ✅", f"Data saved for {today}!")
 
 def load_data():
-    """Load existing data from the JSON file."""
+    #Load existing data from the JSON file
     if not os.path.exists(FILENAME):
         messagebox.showinfo("No Logs", "No logs written yet.")
         return {}
@@ -89,7 +89,7 @@ def show_log_for_entry(entry_widget):
         messagebox.showinfo("No log ❌", f"No data found for {query}.")
 
 def save_today():
-    """Save today’s entry from the input fields with detailed validation."""
+    #Save today’s entry from the input fields with detailed validation
     today = str(date.today())
     entry = {}
 
@@ -104,7 +104,7 @@ def save_today():
         
         value = int(value_str)
         
-        # Check rules
+        #check range
         if field in FIELD_RULES:
             min_val, max_val, msg = FIELD_RULES[field]
             if not (min_val <= value <= max_val):
@@ -141,6 +141,7 @@ def show_log():
         messagebox.showinfo("No log ❌", f"No data found for {query}.")
 
 def show_week_log():
+    #the cool table
     data = load_data()
     if not data:
         messagebox.showinfo("No Data", "No logs found yet.")
@@ -216,9 +217,9 @@ def show_week_log():
 
 def has_today_entry():
     """Check if today's log already exists in the JSON file."""
-    data = load_data()                 # get all stored data
-    today = str(date.today())          # get today's date (e.g., '2025-11-05')
-    return today in data               # True if today is in data, else False
+    data = load_data()            
+    today = str(date.today())         # get today's date (eg: '2025-11-05')
+    return today in data          
 
 # =============================== UI SETUP ===============================
 root = tk.Tk()
@@ -262,11 +263,10 @@ tk.Button(home_page, text="❌ Exit", width=22, command=root.quit).pack(pady=5)
 
 
 # --- TODAY LOG PAGE ---
-# =============================== TODAY LOG PAGE ===============================
 tk.Label(today_log_page, text="☀️ Enter Logs for Today", font=("Arial", 15)).pack(pady=10)
 tk.Label(today_log_page, text="u can e" + message +" all of logs or just for a single period \nuse save 'period' to save em separatly 😊", wraplength=300).pack(pady=10)
 
-# Scrollable frame for all entries
+    # Scrollable frame for all entries
 canvas = tk.Canvas(today_log_page, width=300, height=350)
 scrollbar = tk.Scrollbar(today_log_page, orient="vertical", command=canvas.yview)
 scrollable_frame = tk.Frame(canvas)
@@ -284,11 +284,6 @@ canvas.configure(yscrollcommand=scrollbar.set)
 canvas.pack(side="left", fill="both", expand=True)
 scrollbar.pack(side="right", fill="y")
 
-# Flatten all fields and create entries
-ALL_FIELDS = []
-for cat_fields in FIELDS.values():
-    ALL_FIELDS.extend(cat_fields)
-
 entries = {}
 for field in ALL_FIELDS:
     frame = tk.Frame(scrollable_frame)
@@ -298,7 +293,7 @@ for field in ALL_FIELDS:
     e.pack(side="right", padx=5)
     entries[field] = e
 
-# --- Buttons per category ---
+    # --- Buttons per category ---
 btn_frame = tk.Frame(today_log_page)
 btn_frame.pack(pady=10)
 
@@ -308,32 +303,23 @@ for cat in FIELDS.keys():
         command=lambda c=cat: save_partial_entry(FIELDS[c])  # call function from App Logic
     ).pack(side="left", padx=5)
 
+tk.Button(today_log_page, text="💾 Save Today", width=15, command=save_today).pack(pady=10)
+
 tk.Button(today_log_page, text="← Back to Home", command=lambda: show_page(home_page)).pack(pady=15)
 
-# =============================== SHOW LOGS PAGE ===============================
-show_logs_page = tk.Frame(root)
-
+# --- SHOW LOGS PAGE ---
 tk.Label(show_logs_page, text="📂 Show Logs", font=("Arial", 15)).pack(pady=10)
 
-# --- Button to show weekly logs ---
+    #Button to show weekly logs
 tk.Button(show_logs_page, text="📅 Show Weekly Logs", width=22, command=show_week_log).pack(pady=5)
 
-# --- Daily log by date ---
+    # Daily log by date
 tk.Label(show_logs_page, text="📅 Show log for date (YYYY-MM-DD):").pack(pady=5)
 date_entry_logs = tk.Entry(show_logs_page, width=18)
 date_entry_logs.pack(pady=5)
 tk.Button(show_logs_page, text="🔍 Show Log", width=15, command=lambda: show_log_for_entry(date_entry_logs)).pack(pady=5)
 
-# --- Back button ---
 tk.Button(show_logs_page, text="← Back to Home", width=15, command=lambda: show_page(home_page)).pack(pady=15)
-
-
-tk.Button(today_log_page, text="💾 Save Today", width=15, command=save_today).pack(pady=10)
-tk.Label(today_log_page, text="📅 Show log for date (YYYY-MM-DD):").pack()
-date_entry = tk.Entry(today_log_page, width=18)
-date_entry.pack(pady=5)
-tk.Button(today_log_page, text="🔍 Show Log", width=15, command=show_log).pack(pady=5)
-tk.Button(today_log_page, text="← Back to Home", command=lambda: show_page(home_page)).pack(pady=15)
 
 # --- ABOUT PAGE ---
 tk.Label(about_page, text="ℹ️ About This App", font=("Arial", 15)).pack(pady=15)
@@ -344,3 +330,4 @@ tk.Button(about_page, text="← Back to Home", command=lambda: show_page(home_pa
 # =============================== START APP ===============================
 show_page(home_page)
 root.mainloop()
+
